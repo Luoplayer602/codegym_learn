@@ -1,13 +1,9 @@
-# AI Prompt Log - HealthSync Project
+# AI Prompt Log - Tối ưu CSDL AutoRide
 
-## Prompt 1: Tìm hiểu Anti-pattern trong thiết kế trạng thái
-- **User:** "Trong thiết kế cơ sở dữ liệu quan hệ, tại sao việc dùng một cột is_active (kiểu TINYINT/BOOLEAN) để theo dõi vòng đời của một Đơn hàng/Lịch hẹn lại là một thiết kế tồi (Anti-pattern)? Tôi nên thay thế bằng cấu trúc nào?"
-- **AI Response:** Giải thích rủi ro mất dấu vết trạng thái trung gian của Boolean và đề xuất sử dụng kiểu dữ liệu `ENUM` hoặc bảng tra cứu trạng thái (`Status Look-up Table`).
+## Câu hỏi 1: Lựa chọn kiểu dữ liệu lưu trữ tiền tệ
+- **Prompt:** "Trong thiết kế cơ sở dữ liệu MySQL, tôi nên dùng kiểu FLOAT, DOUBLE hay DECIMAL để lưu trữ các cột tài chính như tiền cọc (security_deposit) và tiền đền bù (damage_fee)? Tại sao?"
+- **AI Phản hồi:** AI khuyên sử dụng kiểu `DECIMAL(10,2)` (hoặc tương đương) để lưu trữ giá trị tiền tệ. Các kiểu dữ liệu dấu phẩy động như FLOAT hay DOUBLE lưu trữ số xấp xỉ nên dễ dẫn đến sai số khi tính toán cộng trừ nhân chia. Trong khi đó, `DECIMAL` lưu giá trị chính xác tuyệt đối, vốn là yêu cầu khắt khe và bắt buộc của mọi hệ thống liên quan đến kế toán, tài chính.
 
-## Prompt 2: Chọn kiểu dữ liệu tài chính
-- **User:** "Khi thiết kế cột deposit_amount và penalty_fee trong MySQL phục vụ tính toán tài chính, tôi nên dùng kiểu dữ liệu FLOAT, DOUBLE hay DECIMAL? Tại sao?"
-- **AI Response:** Khuyên dùng `DECIMAL(10,2)` vì `FLOAT` và `DOUBLE` bị rủi ro làm tròn số do biểu diễn số thực dấu phẩy động (Floating point precision issue), không an toàn cho tính toán tiền tệ.
-
-## Prompt 3: Cú pháp cập nhật bảng cũ
-- **User:** "Hãy cho tôi xem cú pháp chuẩn trong MySQL để thêm một cột status với kiểu dữ liệu ENUM chứa các giá trị ('PENDING', 'CONFIRMED', 'CHECKED_IN', 'COMPLETED', 'CANCELLED') vào một bảng có sẵn."
-- **AI Response:** Cung cấp câu lệnh `ALTER TABLE Appointments ADD COLUMN status ENUM(...)` và hướng dẫn chuyển đổi an toàn dữ liệu.
+## Câu hỏi 2: Chiến lược xóa dữ liệu khóa ngoại
+- **Prompt:** "Khi tạo khóa ngoại giữa bảng Inspections và bảng Rentals, tôi có nên dùng ON DELETE CASCADE không? Hay dùng cấu trúc nào khác?"
+- **AI Phản hồi:** AI phân tích không nên dùng `CASCADE`. Bảng Inspections lưu trữ biên bản kiểm tra liên quan đến đền bù tài chính. Nếu dùng `CASCADE`, khi xóa một bản ghi thuê xe (Rentals), biên bản kiểm tra cũng sẽ tự động bốc hơi, làm mất dấu vết kiểm toán. AI đề xuất sử dụng `ON DELETE RESTRICT` để khóa chặt bản ghi: ngăn chặn bất kỳ ai xóa hợp đồng thuê xe nếu hợp đồng đó đã có biên bản kiểm tra lưu trong hệ thống.
