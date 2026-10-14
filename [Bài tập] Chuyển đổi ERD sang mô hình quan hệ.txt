@@ -1,0 +1,58 @@
+Bước 1: Xác định các thực thể có trong mô hình ERD
+Từ mô hình ERD, ta xác định được 5 thực thể độc lập với các thuộc tính cơ bản (thuộc tính gạch chân là Khóa chính - Primary Key):
+1. PHIEUXUAT (SoPX, NgayXuat)
+2. VATTU (MaVTU, TenVTU)
+3. PHIEUNHAP (SoPN, NgayNhap)
+4. DONDH (SoDH, NgayDH)
+5. NHACC (MaNCC, TenNCC, DiaChi)
+
+Bước 2: Xác định các mối quan hệ 1-1, 1-n, n-m
+- Mối quan hệ "4" (Cung cấp) là 1-N giữa NHACC (1) và DONDH (N): 
+  => Thêm trường khóa ngoại `MaNCC` vào bảng `DONDH`.
+- Mối quan hệ "1" (Chi tiết phiếu xuất) là N-N giữa PHIEUXUAT (N) và VATTU (N): 
+  => Sinh ra bảng trung gian `CHITIETPHIEUXUAT` chứa 2 khóa ngoại là `SoPX`, `MaVTU` (đồng thời là khóa chính ghép) và các thuộc tính riêng của mối quan hệ là `DGXuat`, `SLXuat`.
+- Mối quan hệ "2" (Chi tiết phiếu nhập) là N-N giữa PHIEUNHAP (N) và VATTU (N): 
+  => Sinh ra bảng trung gian `CHITIETPHIEUNHAP` chứa 2 khóa ngoại là `SoPN`, `MaVTU` (đồng thời là khóa chính ghép) và các thuộc tính riêng của mối quan hệ là `DGNhap`, `SLNhap`.
+- Mối quan hệ "3" (Chi tiết đơn đặt hàng) là N-N giữa DONDH (N) và VATTU (N): 
+  => Sinh ra bảng trung gian `CHITIETDONDATHANG` chứa 2 khóa ngoại là `SoDH`, `MaVTU` (đồng thời làm khóa chính ghép).
+
+Bước 3: Xác định các thuộc tính đa trị và tạo thành 1 bảng mới
+- Thực thể NHACC có thuộc tính `SĐT` là thuộc tính đa trị (thể hiện bằng hình elip nét đôi).
+  => Tách ra thành 1 bảng mới tên là `SDT_NCC` gồm 2 trường là `MaNCC` (Khóa ngoại tham chiếu đến bảng NHACC) và `SDT`. Khóa chính của bảng này là tổ hợp (`MaNCC`, `SDT`).
+
+Bước 4: Liệt kê lại danh sách các bảng sau khi chuyển đổi xong (9 bảng)
+
+1. PHIEUXUAT (SoPX, NgayXuat)
+   - Khóa chính: SoPX
+
+2. VATTU (MaVTU, TenVTU)
+   - Khóa chính: MaVTU
+
+3. PHIEUNHAP (SoPN, NgayNhap)
+   - Khóa chính: SoPN
+
+4. NHACC (MaNCC, TenNCC, DiaChi)
+   - Khóa chính: MaNCC
+
+5. SDT_NCC (MaNCC, SDT)
+   - Khóa chính: (MaNCC, SDT)
+   - Khóa ngoại: MaNCC tham chiếu tới NHACC(MaNCC)
+
+6. DONDH (SoDH, NgayDH, MaNCC)
+   - Khóa chính: SoDH
+   - Khóa ngoại: MaNCC tham chiếu tới NHACC(MaNCC)
+
+7. CHITIETPHIEUXUAT (SoPX, MaVTU, DGXuat, SLXuat)
+   - Khóa chính: (SoPX, MaVTU)
+   - Khóa ngoại 1: SoPX tham chiếu tới PHIEUXUAT(SoPX)
+   - Khóa ngoại 2: MaVTU tham chiếu tới VATTU(MaVTU)
+
+8. CHITIETPHIEUNHAP (SoPN, MaVTU, DGNhap, SLNhap)
+   - Khóa chính: (SoPN, MaVTU)
+   - Khóa ngoại 1: SoPN tham chiếu tới PHIEUNHAP(SoPN)
+   - Khóa ngoại 2: MaVTU tham chiếu tới VATTU(MaVTU)
+
+9. CHITIETDONDATHANG (SoDH, MaVTU)
+   - Khóa chính: (SoDH, MaVTU)
+   - Khóa ngoại 1: SoDH tham chiếu tới DONDH(SoDH)
+   - Khóa ngoại 2: MaVTU tham chiếu tới VATTU(MaVTU)
