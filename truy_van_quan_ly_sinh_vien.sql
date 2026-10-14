@@ -1,29 +1,31 @@
--- Bước 1: Sử dụng cơ sở dữ liệu QuanLySinhVien
+-- Sử dụng cơ sở dữ liệu QuanLySinhVien
 USE QuanLySinhVien;
 
--- Bước 2: Hiển thị danh sách tất cả các học viên
-SELECT *
-FROM Student;
+-- 1. Hiển thị tất cả các sinh viên có tên bắt đầu bằng ký tự ‘h’
+SELECT * 
+FROM Student 
+WHERE StudentName LIKE 'h%';
 
--- Bước 3: Hiển thị danh sách các học viên đang theo học
-SELECT *
-FROM Student
-WHERE Status = true;
+-- 2. Hiển thị các thông tin lớp học có thời gian bắt đầu vào tháng 12
+SELECT * 
+FROM Class 
+WHERE MONTH(StartDate) = 12;
 
--- Bước 4: Hiển thị danh sách các môn học có thời gian học nhỏ hơn 10 giờ
-SELECT *
-FROM Subject
-WHERE Credit < 10;
+-- 3. Hiển thị tất cả các thông tin môn học có credit trong khoảng từ 3-5
+SELECT * 
+FROM Subject 
+WHERE Credit BETWEEN 3 AND 5;
 
--- Bước 5: Hiển thị danh sách học viên lớp A1
-SELECT S.StudentId, S.StudentName, C.ClassName
-FROM Student S 
-JOIN Class C ON S.ClassId = C.ClassID
-WHERE C.ClassName = 'A1';
+-- 4. Thay đổi mã lớp (ClassID) của sinh viên có tên ‘Hung’ là 2
+-- (Lưu ý: Nếu bị lỗi Safe Update Mode trong MySQL Workbench, hãy chạy lệnh SET SQL_SAFE_UPDATES = 0; trước khi chạy lệnh UPDATE này)
+UPDATE Student 
+SET ClassId = 2 
+WHERE StudentName = 'Hung';
 
--- Bước 6: Hiển thị điểm môn CF của các học viên
-SELECT S.StudentId, S.StudentName, Sub.SubName, M.Mark
-FROM Student S 
-JOIN Mark M ON S.StudentId = M.StudentId 
+-- 5. Hiển thị các thông tin: StudentName, SubName, Mark. 
+-- Dữ liệu sắp xếp theo điểm thi (mark) giảm dần. Nếu trùng sắp theo tên tăng dần.
+SELECT S.StudentName, Sub.SubName, M.Mark 
+FROM Student S
+JOIN Mark M ON S.StudentId = M.StudentId
 JOIN Subject Sub ON M.SubId = Sub.SubId
-WHERE Sub.SubName = 'CF';
+ORDER BY M.Mark DESC, S.StudentName ASC;
